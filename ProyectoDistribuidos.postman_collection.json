@@ -44,27 +44,6 @@
   ],
   "item": [
     {
-      "name": "0. Health Checks",
-      "item": [
-        {
-          "name": "Health - UsersService",
-          "request": {
-            "auth": {
-              "type": "noauth"
-            },
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/health",
-              "host": ["{{BASE_URL}}"],
-              "path": ["health"]
-            },
-            "description": "Verificar que el sistema esté funcionando correctamente"
-          }
-        }
-      ]
-    },
-    {
       "name": "1. UsersService - Autenticación y Usuarios",
       "item": [
         {
@@ -112,9 +91,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users/login",
+              "raw": "{{BASE_URL}}/api/users/login",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users", "login"]
+              "path": ["api", "users", "login"]
             },
             "description": "**IMPORTANTE**: Ejecuta este request PRIMERO para obtener el token JWT.\n\nEl token se guarda automáticamente en la variable `JWT_TOKEN` y se usa en todos los demás requests.\n\n**Credenciales por defecto:**\n- Email: admin@example.com\n- Password: mypassword123"
           }
@@ -146,7 +125,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 1234567890,\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"SecurePass123\",\n  \"phone\": \"3001234567\",\n  \"role\": \"employee\"\n}",
+              "raw": "{\n  \"id\": 1234567890,\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"SecurePass123\",\n  \"phone\": \"3001234567\",\n  \"role\": \"EMPLOYEE\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -154,11 +133,11 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users",
+              "raw": "{{BASE_URL}}/api/users",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users"]
+              "path": ["api", "users"]
             },
-            "description": "Crear un nuevo usuario en el sistema.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Campos obligatorios:**\n- id: Número de documento (6-12 dígitos)\n- firstName: Nombre\n- lastName: Apellido\n- email: Email único\n- password: Contraseña (mínimo 8 caracteres)\n- phone: Teléfono (10 dígitos)\n- role: \"admin\" o \"employee\""
+            "description": "Crear un nuevo usuario en el sistema.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Campos obligatorios:**\n- id: Número de documento (6-12 dígitos)\n- firstName: Nombre\n- lastName: Apellido\n- email: Email único\n- password: Contraseña (mínimo 8 caracteres)\n- phone: Teléfono (10 dígitos)\n- role: \"ADMIN\" o \"EMPLOYEE\""
           }
         },
         {
@@ -170,9 +149,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users",
+              "raw": "{{BASE_URL}}/api/users",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users"]
+              "path": ["api", "users"]
             },
             "description": "Obtener lista de todos los usuarios registrados.\n\n**No requiere autenticación**"
           }
@@ -186,9 +165,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users/{{USER_ID}}",
+              "raw": "{{BASE_URL}}/api/users/{{USER_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users", "{{USER_ID}}"]
+              "path": ["api", "users", "{{USER_ID}}"]
             },
             "description": "Obtener información detallada de un usuario específico.\n\n**No requiere autenticación**"
           }
@@ -213,9 +192,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users/{{USER_ID}}",
+              "raw": "{{BASE_URL}}/api/users/{{USER_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users", "{{USER_ID}}"]
+              "path": ["api", "users", "{{USER_ID}}"]
             },
             "description": "Actualizar información de un usuario.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Todos los campos son opcionales**"
           }
@@ -226,9 +205,9 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users/{{USER_ID}}",
+              "raw": "{{BASE_URL}}/api/users/{{USER_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users", "{{USER_ID}}"]
+              "path": ["api", "users", "{{USER_ID}}"]
             },
             "description": "Eliminar un usuario del sistema.\n\n**Requiere**: Token JWT (Solo Admin)"
           }
@@ -245,9 +224,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll/companies",
+              "raw": "{{BASE_URL}}/api/companies",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll", "companies"]
+              "path": ["api", "companies"]
             },
             "description": "Obtener lista de todas las empresas disponibles.\n\n**Requiere**: Token JWT\n\nEjecuta esto ANTES de crear nóminas para conocer los IDs de empresas disponibles."
           }
@@ -279,7 +258,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userDocument\": \"{{USER_ID}}\",\n  \"companyId\": 1,\n  \"position\": \"Desarrollador Senior\",\n  \"status\": \"activo\"\n}",
+              "raw": "{\n  \"userId\": {{USER_ID}},\n  \"companyId\": 1,\n  \"status\": \"activo\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -287,11 +266,11 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll",
+              "raw": "{{BASE_URL}}/api/payrolls",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll"]
+              "path": ["api", "payrolls"]
             },
-            "description": "Crear una nómina para un usuario.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Campos obligatorios:**\n- userDocument: ID del usuario\n- companyId: ID de la empresa\n- position: Cargo del empleado\n- status: \"activo\" o \"inactivo\""
+            "description": "Crear una nómina para un usuario.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Campos obligatorios:**\n- userId: ID numérico del usuario\n- companyId: ID de la empresa\n- status: \"activo\" o \"retirado\""
           }
         },
         {
@@ -300,9 +279,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll",
+              "raw": "{{BASE_URL}}/api/payrolls",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll"]
+              "path": ["api", "payrolls"]
             },
             "description": "Listar todas las nóminas del sistema.\n\n**Requiere**: Token JWT (Solo Admin)"
           }
@@ -313,22 +292,22 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll/{{PAYROLL_ID}}",
+              "raw": "{{BASE_URL}}/api/payrolls/{{PAYROLL_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll", "{{PAYROLL_ID}}"]
+              "path": ["api", "payrolls", "{{PAYROLL_ID}}"]
             },
             "description": "Obtener información de una nómina específica.\n\n**Requiere**: Token JWT"
           }
         },
         {
-          "name": "2.5 Obtener Nóminas por Documento",
+          "name": "2.5 Obtener Nóminas por Usuario",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll/document/{{USER_ID}}",
+              "raw": "{{BASE_URL}}/api/payrolls/user/{{USER_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll", "document", "{{USER_ID}}"]
+              "path": ["api", "payrolls", "user", "{{USER_ID}}"]
             },
             "description": "Obtener todas las nóminas de un usuario.\n\n**Requiere**: Token JWT"
           }
@@ -339,9 +318,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll/document/{{USER_ID}}/active",
+              "raw": "{{BASE_URL}}/api/payrolls/user/{{USER_ID}}/active",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll", "document", "{{USER_ID}}", "active"]
+              "path": ["api", "payrolls", "user", "{{USER_ID}}", "active"]
             },
             "description": "Obtener la nómina activa de un usuario.\n\n**Requiere**: Token JWT"
           }
@@ -358,7 +337,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"position\": \"Desarrollador Tech Lead\",\n  \"status\": \"activo\"\n}",
+              "raw": "{\n  \"status\": \"retirado\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -366,11 +345,11 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll/{{PAYROLL_ID}}",
+              "raw": "{{BASE_URL}}/api/payrolls/{{PAYROLL_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll", "{{PAYROLL_ID}}"]
+              "path": ["api", "payrolls", "{{PAYROLL_ID}}"]
             },
-            "description": "Actualizar información de una nómina.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Todos los campos son opcionales**"
+            "description": "Actualizar información de una nómina.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Campos opcionales:**\n- status: \"activo\" o \"retirado\""
           }
         },
         {
@@ -379,9 +358,9 @@
             "method": "DELETE",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll/{{PAYROLL_ID}}",
+              "raw": "{{BASE_URL}}/api/payrolls/{{PAYROLL_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll", "{{PAYROLL_ID}}"]
+              "path": ["api", "payrolls", "{{PAYROLL_ID}}"]
             },
             "description": "Eliminar una nómina del sistema.\n\n**Requiere**: Token JWT (Solo Admin)"
           }
@@ -539,9 +518,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users/login",
+              "raw": "{{BASE_URL}}/api/users/login",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users", "login"]
+              "path": ["api", "users", "login"]
             }
           }
         },
@@ -567,7 +546,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 9876543210,\n  \"firstName\": \"María\",\n  \"lastName\": \"González\",\n  \"email\": \"maria.gonzalez@example.com\",\n  \"password\": \"SecurePass456\",\n  \"phone\": \"3209876543\",\n  \"role\": \"employee\"\n}",
+              "raw": "{\n  \"id\": 9876543210,\n  \"firstName\": \"María\",\n  \"lastName\": \"González\",\n  \"email\": \"maria.gonzalez@example.com\",\n  \"password\": \"SecurePass456\",\n  \"phone\": \"3209876543\",\n  \"role\": \"EMPLOYEE\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -575,9 +554,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/v1/users",
+              "raw": "{{BASE_URL}}/api/users",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "v1", "users"]
+              "path": ["api", "users"]
             }
           }
         },
@@ -600,9 +579,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll/companies",
+              "raw": "{{BASE_URL}}/api/companies",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll", "companies"]
+              "path": ["api", "companies"]
             }
           }
         },
@@ -628,7 +607,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"userDocument\": \"{{USER_ID}}\",\n  \"companyId\": 1,\n  \"position\": \"Desarrolladora Frontend\",\n  \"status\": \"activo\"\n}",
+              "raw": "{\n  \"userId\": {{USER_ID}},\n  \"companyId\": 1,\n  \"status\": \"activo\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -636,9 +615,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/payroll",
+              "raw": "{{BASE_URL}}/api/payrolls",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "payroll"]
+              "path": ["api", "payrolls"]
             }
           }
         },
@@ -743,3 +722,4 @@
     }
   ]
 }
+
