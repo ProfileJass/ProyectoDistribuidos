@@ -11,9 +11,10 @@
 **/.env
 **/.env.local
 
-# Package lock files (opcional - algunos equipos los incluyen)
-# **/package-lock.json
-# **/yarn.lock
+# Package lock files
+**/package-lock.json
+**/yarn.lock
+**/pnpm-lock.yaml
 
 # Logs
 *.log
