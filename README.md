@@ -55,6 +55,33 @@ Proyecto de microservicios con **balanceo de carga**, **autenticación JWT** y *
 
 ---
 
+## 🚀 Inicio Rápido
+
+### 1. Levantar todos los servicios
+```bash
+docker-compose up -d --build
+```
+
+### 2. Cargar datos iniciales (IMPORTANTE)
+**Este comando es necesario para el flujo completo de los endpoints:**
+```bash
+docker exec users-service-1 npm run seed
+```
+
+Este comando crea:
+- ✅ Usuario administrador: `admin@example.com` / `mypassword123`
+- ✅ 5 empresas predefinidas en la base de datos
+- ✅ Datos necesarios para probar todos los endpoints
+
+### 3. Verificar que todo esté funcionando
+```bash
+docker-compose ps
+```
+
+Todos los servicios deben mostrar estado `healthy`.
+
+---
+
 ## Colección Postman
 
 ### Importar en Postman:
@@ -175,17 +202,6 @@ docker-compose down
 docker-compose down -v --rmi all
 ```
 
-### Gestión de Volúmenes
-```bash
-# Listar volúmenes
-docker volume ls
-
-# Ver detalles de un volumen
-docker volume inspect proyectodistribuidos_postgres-data
-
-# Eliminar volúmenes no usados
-docker volume prune
-```
 
 ### Ejecutar Comandos en Contenedores
 ```bash

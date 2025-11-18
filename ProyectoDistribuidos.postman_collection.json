@@ -406,11 +406,11 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/incapacities",
+              "raw": "{{BASE_URL}}/api/incapacities/create",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities"]
+              "path": ["api", "incapacities", "create"]
             },
-            "description": "Radicar una nueva incapacidad.\n\n**Requiere**: Token JWT\n\n**Campos obligatorios:**\n- id_user: ID del usuario\n- id_payroll: ID de la nómina\n- start_date: Fecha de inicio (YYYY-MM-DD)\n- end_date: Fecha de fin (YYYY-MM-DD)\n- type: \"enfermedad\", \"accidente\", \"maternidad\", \"paternidad\"\n- status: \"pendiente\", \"aprobada\", \"rechazada\"\n- observacion: Descripción (opcional)"
+            "description": "Radicar una nueva incapacidad.\n\n**Requiere**: Token JWT\n\n**Campos obligatorios:**\n- id_user: ID del usuario\n- id_payroll: ID de la nómina\n- start_date: Fecha de inicio (YYYY-MM-DD)\n- end_date: Fecha de fin (YYYY-MM-DD)\n- type: \"enfermedad\", \"accidente\", \"maternidad\", \"paternidad\"\n- status: \"pendiente\", \"en trámite\", \"confirmada\", \"negada\"\n- observacion: Descripción (opcional)"
           }
         },
         {
@@ -419,41 +419,28 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/incapacities",
+              "raw": "{{BASE_URL}}/api/incapacities/getAll",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities"]
+              "path": ["api", "incapacities", "getAll"]
             },
-            "description": "Listar todas las incapacidades con información completa del usuario, nómina y empresa.\n\n**Requiere**: Token JWT"
+            "description": "Listar todas las incapacidades con información completa del usuario, nómina y empresa.\n\n**Requiere**: Token JWT (Solo Admin)"
           }
         },
         {
-          "name": "3.3 Obtener Incapacidad por ID",
+          "name": "3.3 Obtener Incapacidades por Usuario",
           "request": {
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/incapacities/{{INCAPACITY_ID}}",
+              "raw": "{{BASE_URL}}/api/incapacities/getByUser/{{USER_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities", "{{INCAPACITY_ID}}"]
-            },
-            "description": "Obtener detalles completos de una incapacidad específica.\n\n**Requiere**: Token JWT"
-          }
-        },
-        {
-          "name": "3.4 Obtener Incapacidades por Usuario",
-          "request": {
-            "method": "GET",
-            "header": [],
-            "url": {
-              "raw": "{{BASE_URL}}/api/incapacities/user/{{USER_ID}}",
-              "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities", "user", "{{USER_ID}}"]
+              "path": ["api", "incapacities", "getByUser", "{{USER_ID}}"]
             },
             "description": "Obtener todas las incapacidades de un usuario específico.\n\n**Requiere**: Token JWT"
           }
         },
         {
-          "name": "3.5 Actualizar Estado de Incapacidad",
+          "name": "3.4 Actualizar Estado de Incapacidad",
           "request": {
             "method": "PUT",
             "header": [
@@ -464,7 +451,7 @@
             ],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"aprobada\"\n}",
+              "raw": "{\n  \"status\": \"confirmada\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -472,11 +459,11 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/incapacities/{{INCAPACITY_ID}}/status",
+              "raw": "{{BASE_URL}}/api/incapacities/update/{{INCAPACITY_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities", "{{INCAPACITY_ID}}", "status"]
+              "path": ["api", "incapacities", "update", "{{INCAPACITY_ID}}"]
             },
-            "description": "Actualizar el estado de una incapacidad (aprobar o rechazar).\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Valores permitidos:**\n- \"pendiente\"\n- \"aprobada\"\n- \"rechazada\""
+            "description": "Actualizar el estado de una incapacidad (aprobar o rechazar).\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Valores permitidos:**\n- \"pendiente\"\n- \"en trámite\"\n- \"confirmada\"\n- \"negada\""
           }
         }
       ],
@@ -546,7 +533,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"id\": 9876543210,\n  \"firstName\": \"María\",\n  \"lastName\": \"González\",\n  \"email\": \"maria.gonzalez@example.com\",\n  \"password\": \"SecurePass456\",\n  \"phone\": \"3209876543\",\n  \"role\": \"EMPLOYEE\"\n}",
+              "raw": "{\n  \"id\": 987654321,\n  \"firstName\": \"María\",\n  \"lastName\": \"González\",\n  \"email\": \"maria.gonzalez@example.com\",\n  \"password\": \"SecurePass456\",\n  \"phone\": \"3209876543\",\n  \"role\": \"EMPLOYEE\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -651,9 +638,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/incapacities",
+              "raw": "{{BASE_URL}}/api/incapacities/create",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities"]
+              "path": ["api", "incapacities", "create"]
             }
           }
         },
@@ -676,9 +663,9 @@
             "method": "GET",
             "header": [],
             "url": {
-              "raw": "{{BASE_URL}}/api/incapacities",
+              "raw": "{{BASE_URL}}/api/incapacities/getAll",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities"]
+              "path": ["api", "incapacities", "getAll"]
             }
           }
         },
@@ -703,7 +690,7 @@
             "header": [],
             "body": {
               "mode": "raw",
-              "raw": "{\n  \"status\": \"aprobada\"\n}",
+              "raw": "{\n  \"status\": \"confirmada\"\n}",
               "options": {
                 "raw": {
                   "language": "json"
@@ -711,9 +698,9 @@
               }
             },
             "url": {
-              "raw": "{{BASE_URL}}/api/incapacities/{{INCAPACITY_ID}}/status",
+              "raw": "{{BASE_URL}}/api/incapacities/update/{{INCAPACITY_ID}}",
               "host": ["{{BASE_URL}}"],
-              "path": ["api", "incapacities", "{{INCAPACITY_ID}}", "status"]
+              "path": ["api", "incapacities", "update", "{{INCAPACITY_ID}}"]
             }
           }
         }
