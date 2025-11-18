@@ -1,0 +1,745 @@
+{
+  "info": {
+    "name": "ProyectoDistribuidos - Microservicios",
+    "description": "Colección completa de endpoints para el sistema de microservicios de usuarios, nóminas e incapacidades.\n\nAutores: Jhonatan Sierra, Karen Ruiz, Wilson Soledad",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "12345678"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [
+      {
+        "key": "token",
+        "value": "{{JWT_TOKEN}}",
+        "type": "string"
+      }
+    ]
+  },
+  "variable": [
+    {
+      "key": "BASE_URL",
+      "value": "http://localhost",
+      "type": "string"
+    },
+    {
+      "key": "JWT_TOKEN",
+      "value": "",
+      "type": "string"
+    },
+    {
+      "key": "USER_ID",
+      "value": "1234567890",
+      "type": "string"
+    },
+    {
+      "key": "PAYROLL_ID",
+      "value": "1",
+      "type": "string"
+    },
+    {
+      "key": "INCAPACITY_ID",
+      "value": "1",
+      "type": "string"
+    }
+  ],
+  "item": [
+    {
+      "name": "0. Health Checks",
+      "item": [
+        {
+          "name": "Health - UsersService",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/health",
+              "host": ["{{BASE_URL}}"],
+              "path": ["health"]
+            },
+            "description": "Verificar que el sistema esté funcionando correctamente"
+          }
+        }
+      ]
+    },
+    {
+      "name": "1. UsersService - Autenticación y Usuarios",
+      "item": [
+        {
+          "name": "1.1 Login (Obtener Token JWT)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "// Guardar el token automáticamente",
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('JWT_TOKEN', response.data.token);",
+                  "    console.log('✅ Token guardado exitosamente');",
+                  "    console.log('Token:', response.data.token);",
+                  "    ",
+                  "    // Guardar ID del usuario para pruebas",
+                  "    pm.collectionVariables.set('ADMIN_ID', response.data.user.id);",
+                  "} else {",
+                  "    console.log('❌ Error en login:', pm.response.json().message);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"mypassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users", "login"]
+            },
+            "description": "**IMPORTANTE**: Ejecuta este request PRIMERO para obtener el token JWT.\n\nEl token se guarda automáticamente en la variable `JWT_TOKEN` y se usa en todos los demás requests.\n\n**Credenciales por defecto:**\n- Email: admin@example.com\n- Password: mypassword123"
+          }
+        },
+        {
+          "name": "1.2 Crear Usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('USER_ID', response.data.id);",
+                  "    console.log('✅ Usuario creado con ID:', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 1234567890,\n  \"firstName\": \"Juan\",\n  \"lastName\": \"Pérez\",\n  \"email\": \"juan.perez@example.com\",\n  \"password\": \"SecurePass123\",\n  \"phone\": \"3001234567\",\n  \"role\": \"employee\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "description": "Crear un nuevo usuario en el sistema.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Campos obligatorios:**\n- id: Número de documento (6-12 dígitos)\n- firstName: Nombre\n- lastName: Apellido\n- email: Email único\n- password: Contraseña (mínimo 8 caracteres)\n- phone: Teléfono (10 dígitos)\n- role: \"admin\" o \"employee\""
+          }
+        },
+        {
+          "name": "1.3 Obtener Todos los Usuarios",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users"]
+            },
+            "description": "Obtener lista de todos los usuarios registrados.\n\n**No requiere autenticación**"
+          }
+        },
+        {
+          "name": "1.4 Obtener Usuario por ID",
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users", "{{USER_ID}}"]
+            },
+            "description": "Obtener información detallada de un usuario específico.\n\n**No requiere autenticación**"
+          }
+        },
+        {
+          "name": "1.5 Actualizar Usuario",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"firstName\": \"Juan Carlos\",\n  \"phone\": \"3109876543\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users", "{{USER_ID}}"]
+            },
+            "description": "Actualizar información de un usuario.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Todos los campos son opcionales**"
+          }
+        },
+        {
+          "name": "1.6 Eliminar Usuario",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users", "{{USER_ID}}"]
+            },
+            "description": "Eliminar un usuario del sistema.\n\n**Requiere**: Token JWT (Solo Admin)"
+          }
+        }
+      ],
+      "description": "Endpoints para gestión de usuarios y autenticación con JWT"
+    },
+    {
+      "name": "2. PayrollService - Nóminas y Empresas",
+      "item": [
+        {
+          "name": "2.1 Listar Empresas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll/companies",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll", "companies"]
+            },
+            "description": "Obtener lista de todas las empresas disponibles.\n\n**Requiere**: Token JWT\n\nEjecuta esto ANTES de crear nóminas para conocer los IDs de empresas disponibles."
+          }
+        },
+        {
+          "name": "2.2 Crear Nómina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('PAYROLL_ID', response.data.id);",
+                  "    console.log('✅ Nómina creada con ID:', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userDocument\": \"{{USER_ID}}\",\n  \"companyId\": 1,\n  \"position\": \"Desarrollador Senior\",\n  \"status\": \"activo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll"]
+            },
+            "description": "Crear una nómina para un usuario.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Campos obligatorios:**\n- userDocument: ID del usuario\n- companyId: ID de la empresa\n- position: Cargo del empleado\n- status: \"activo\" o \"inactivo\""
+          }
+        },
+        {
+          "name": "2.3 Obtener Todas las Nóminas",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll"]
+            },
+            "description": "Listar todas las nóminas del sistema.\n\n**Requiere**: Token JWT (Solo Admin)"
+          }
+        },
+        {
+          "name": "2.4 Obtener Nómina por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll/{{PAYROLL_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll", "{{PAYROLL_ID}}"]
+            },
+            "description": "Obtener información de una nómina específica.\n\n**Requiere**: Token JWT"
+          }
+        },
+        {
+          "name": "2.5 Obtener Nóminas por Documento",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll/document/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll", "document", "{{USER_ID}}"]
+            },
+            "description": "Obtener todas las nóminas de un usuario.\n\n**Requiere**: Token JWT"
+          }
+        },
+        {
+          "name": "2.6 Obtener Nómina Activa",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll/document/{{USER_ID}}/active",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll", "document", "{{USER_ID}}", "active"]
+            },
+            "description": "Obtener la nómina activa de un usuario.\n\n**Requiere**: Token JWT"
+          }
+        },
+        {
+          "name": "2.7 Actualizar Nómina",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"position\": \"Desarrollador Tech Lead\",\n  \"status\": \"activo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll/{{PAYROLL_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll", "{{PAYROLL_ID}}"]
+            },
+            "description": "Actualizar información de una nómina.\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Todos los campos son opcionales**"
+          }
+        },
+        {
+          "name": "2.8 Eliminar Nómina",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll/{{PAYROLL_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll", "{{PAYROLL_ID}}"]
+            },
+            "description": "Eliminar una nómina del sistema.\n\n**Requiere**: Token JWT (Solo Admin)"
+          }
+        }
+      ],
+      "description": "Endpoints para gestión de nóminas y empresas"
+    },
+    {
+      "name": "3. IncapacitiesService - Incapacidades",
+      "item": [
+        {
+          "name": "3.1 Crear Incapacidad",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('INCAPACITY_ID', response.data.id);",
+                  "    console.log('✅ Incapacidad creada con ID:', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_user\": {{USER_ID}},\n  \"id_payroll\": {{PAYROLL_ID}},\n  \"start_date\": \"2025-11-20\",\n  \"end_date\": \"2025-11-25\",\n  \"type\": \"enfermedad\",\n  \"status\": \"pendiente\",\n  \"observacion\": \"Gripe común con síntomas respiratorios\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities"]
+            },
+            "description": "Radicar una nueva incapacidad.\n\n**Requiere**: Token JWT\n\n**Campos obligatorios:**\n- id_user: ID del usuario\n- id_payroll: ID de la nómina\n- start_date: Fecha de inicio (YYYY-MM-DD)\n- end_date: Fecha de fin (YYYY-MM-DD)\n- type: \"enfermedad\", \"accidente\", \"maternidad\", \"paternidad\"\n- status: \"pendiente\", \"aprobada\", \"rechazada\"\n- observacion: Descripción (opcional)"
+          }
+        },
+        {
+          "name": "3.2 Obtener Todas las Incapacidades",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities"]
+            },
+            "description": "Listar todas las incapacidades con información completa del usuario, nómina y empresa.\n\n**Requiere**: Token JWT"
+          }
+        },
+        {
+          "name": "3.3 Obtener Incapacidad por ID",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities/{{INCAPACITY_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities", "{{INCAPACITY_ID}}"]
+            },
+            "description": "Obtener detalles completos de una incapacidad específica.\n\n**Requiere**: Token JWT"
+          }
+        },
+        {
+          "name": "3.4 Obtener Incapacidades por Usuario",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities/user/{{USER_ID}}",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities", "user", "{{USER_ID}}"]
+            },
+            "description": "Obtener todas las incapacidades de un usuario específico.\n\n**Requiere**: Token JWT"
+          }
+        },
+        {
+          "name": "3.5 Actualizar Estado de Incapacidad",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"aprobada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities/{{INCAPACITY_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities", "{{INCAPACITY_ID}}", "status"]
+            },
+            "description": "Actualizar el estado de una incapacidad (aprobar o rechazar).\n\n**Requiere**: Token JWT (Solo Admin)\n\n**Valores permitidos:**\n- \"pendiente\"\n- \"aprobada\"\n- \"rechazada\""
+          }
+        }
+      ],
+      "description": "Endpoints para gestión de incapacidades médicas"
+    },
+    {
+      "name": "4. Flujo Completo de Prueba",
+      "item": [
+        {
+          "name": "Paso 1: Login",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('JWT_TOKEN', response.data.token);",
+                  "    console.log('✅ Paso 1 completado: Token obtenido');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "auth": {
+              "type": "noauth"
+            },
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"admin@example.com\",\n  \"password\": \"mypassword123\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users/login",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users", "login"]
+            }
+          }
+        },
+        {
+          "name": "Paso 2: Crear Usuario",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('USER_ID', response.data.id);",
+                  "    console.log('✅ Paso 2 completado: Usuario creado con ID', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id\": 9876543210,\n  \"firstName\": \"María\",\n  \"lastName\": \"González\",\n  \"email\": \"maria.gonzalez@example.com\",\n  \"password\": \"SecurePass456\",\n  \"phone\": \"3209876543\",\n  \"role\": \"employee\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/v1/users",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "v1", "users"]
+            }
+          }
+        },
+        {
+          "name": "Paso 3: Ver Empresas",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Paso 3 completado: Empresas listadas');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll/companies",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll", "companies"]
+            }
+          }
+        },
+        {
+          "name": "Paso 4: Crear Nómina",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('PAYROLL_ID', response.data.id);",
+                  "    console.log('✅ Paso 4 completado: Nómina creada con ID', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"userDocument\": \"{{USER_ID}}\",\n  \"companyId\": 1,\n  \"position\": \"Desarrolladora Frontend\",\n  \"status\": \"activo\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/payroll",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "payroll"]
+            }
+          }
+        },
+        {
+          "name": "Paso 5: Crear Incapacidad",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 201) {",
+                  "    const response = pm.response.json();",
+                  "    pm.collectionVariables.set('INCAPACITY_ID', response.data.id);",
+                  "    console.log('✅ Paso 5 completado: Incapacidad creada con ID', response.data.id);",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"id_user\": {{USER_ID}},\n  \"id_payroll\": {{PAYROLL_ID}},\n  \"start_date\": \"2025-11-20\",\n  \"end_date\": \"2025-11-22\",\n  \"type\": \"enfermedad\",\n  \"status\": \"pendiente\",\n  \"observacion\": \"Resfriado común\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities"]
+            }
+          }
+        },
+        {
+          "name": "Paso 6: Ver Incapacidades",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Paso 6 completado: Incapacidades listadas');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities"]
+            }
+          }
+        },
+        {
+          "name": "Paso 7: Aprobar Incapacidad",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "exec": [
+                  "if (pm.response.code === 200) {",
+                  "    console.log('✅ Paso 7 completado: Incapacidad aprobada');",
+                  "    console.log('🎉 FLUJO COMPLETO FINALIZADO EXITOSAMENTE');",
+                  "}"
+                ],
+                "type": "text/javascript"
+              }
+            }
+          ],
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"aprobada\"\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "{{BASE_URL}}/api/incapacities/{{INCAPACITY_ID}}/status",
+              "host": ["{{BASE_URL}}"],
+              "path": ["api", "incapacities", "{{INCAPACITY_ID}}", "status"]
+            }
+          }
+        }
+      ],
+      "description": "Ejecuta estos 7 pasos en orden para probar el flujo completo del sistema.\n\nCada paso guarda automáticamente las variables necesarias para los siguientes pasos."
+    }
+  ]
+}

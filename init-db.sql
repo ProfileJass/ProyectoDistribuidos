@@ -1,8 +1,3 @@
--- ========================================
--- MICROSERVICIO DE USUARIOS
--- ========================================
-
--- Users table
 CREATE TABLE IF NOT EXISTS users (
     id_user SERIAL PRIMARY KEY,
     "firstName" VARCHAR(255) NOT NULL,
@@ -17,11 +12,6 @@ CREATE TABLE IF NOT EXISTS users (
 CREATE INDEX idx_users_email ON users(email);
 CREATE INDEX idx_users_role ON users(role);
 
--- ========================================
--- MICROSERVICIO DE NÓMINAS
--- ========================================
-
--- Companies table
 CREATE TABLE IF NOT EXISTS companies (
     id_company SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL UNIQUE,
@@ -32,7 +22,6 @@ CREATE TABLE IF NOT EXISTS companies (
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Payrolls table
 CREATE TABLE IF NOT EXISTS payrolls (
     id_payroll SERIAL PRIMARY KEY,
     id_user INTEGER NOT NULL,
@@ -48,11 +37,6 @@ CREATE INDEX idx_payroll_id_user ON payrolls(id_user);
 CREATE INDEX idx_payroll_id_company ON payrolls(id_company);
 CREATE INDEX idx_payroll_status ON payrolls(status);
 
--- ========================================
--- MICROSERVICIO DE INCAPACIDADES
--- ========================================
-
--- Incapacities table
 CREATE TABLE IF NOT EXISTS incapacities (
     id_incapacity SERIAL PRIMARY KEY,
     id_user INTEGER NOT NULL,
@@ -73,10 +57,6 @@ CREATE INDEX idx_incapacities_id_payroll ON incapacities(id_payroll);
 CREATE INDEX idx_incapacities_status ON incapacities(status);
 CREATE INDEX idx_incapacities_start_date ON incapacities(start_date);
 
--- ========================================
--- DATOS INICIALES (SEED)
--- ========================================
-
 -- Insert default companies
 INSERT INTO companies (name, nit, address, phone) VALUES
     ('Tech Solutions S.A.S', '900123456-7', 'Calle 100 #10-20, Bogotá', '+57 1 234 5678'),
@@ -86,11 +66,6 @@ INSERT INTO companies (name, nit, address, phone) VALUES
     ('Desarrollo y Tecnología', '500789123-4', 'Carrera 7 #32-16, Bogotá', '+57 1 789 0123')
 ON CONFLICT (nit) DO NOTHING;
 
--- ========================================
--- TRIGGERS Y FUNCIONES
--- ========================================
-
--- Function to update updated_at timestamp
 CREATE OR REPLACE FUNCTION update_updated_at_column()
 RETURNS TRIGGER AS $$
 BEGIN
@@ -99,7 +74,6 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql;
 
--- Triggers for updated_at
 CREATE TRIGGER update_users_updated_at
     BEFORE UPDATE ON users
     FOR EACH ROW
