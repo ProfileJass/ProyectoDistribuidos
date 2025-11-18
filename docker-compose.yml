@@ -1,0 +1,213 @@
+services:
+  # ========================================
+  # BASE DE DATOS CENTRALIZADA
+  # ========================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: shared-postgres-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: microservices_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    networks:
+      - microservices-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d microservices_db"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  # ========================================
+  # MICROSERVICIO DE USUARIOS (2 INSTANCIAS)
+  # ========================================
+  users-service-1:
+    build:
+      context: ./inabilityUsersMicroservice
+      dockerfile: Dockerfile
+    container_name: users-service-1
+    environment:
+      NODE_ENV: production
+      PORT: 8001
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: microservices_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DIALECT: postgres
+      JWT_SECRET: ${JWT_SECRET:-1f30c30576138864b4b72e4262674bd439208f7f8b50b77d37990f97ec73f98d0d245f565d6277e5d6d61725024f502fd7dd2b41d66be792b4ec12d9e761b56f}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  users-service-2:
+    build:
+      context: ./inabilityUsersMicroservice
+      dockerfile: Dockerfile
+    container_name: users-service-2
+    environment:
+      NODE_ENV: production
+      PORT: 8001
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: microservices_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DIALECT: postgres
+      JWT_SECRET: ${JWT_SECRET:-1f30c30576138864b4b72e4262674bd439208f7f8b50b77d37990f97ec73f98d0d245f565d6277e5d6d61725024f502fd7dd2b41d66be792b4ec12d9e761b56f}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:8001/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  payroll-service-1:
+    build:
+      context: ./Incapacities_project
+      dockerfile: Dockerfile
+    container_name: payroll-service-1
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: microservices_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DIALECT: postgres
+      JWT_SECRET: ${JWT_SECRET:-1f30c30576138864b4b72e4262674bd439208f7f8b50b77d37990f97ec73f98d0d245f565d6277e5d6d61725024f502fd7dd2b41d66be792b4ec12d9e761b56f}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  payroll-service-2:
+    build:
+      context: ./Incapacities_project
+      dockerfile: Dockerfile
+    container_name: payroll-service-2
+    environment:
+      NODE_ENV: production
+      PORT: 3002
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: microservices_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DIALECT: postgres
+      JWT_SECRET: ${JWT_SECRET:-1f30c30576138864b4b72e4262674bd439208f7f8b50b77d37990f97ec73f98d0d245f565d6277e5d6d61725024f502fd7dd2b41d66be792b4ec12d9e761b56f}
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3002/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  incapacities-service-1:
+    build:
+      context: ./Microservicio-de-Incapacidades
+      dockerfile: Dockerfile
+    container_name: incapacities-service-1
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: microservices_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DIALECT: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  incapacities-service-2:
+    build:
+      context: ./Microservicio-de-Incapacidades
+      dockerfile: Dockerfile
+    container_name: incapacities-service-2
+    environment:
+      NODE_ENV: production
+      PORT: 3000
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: microservices_db
+      DB_USER: postgres
+      DB_PASSWORD: postgres
+      DB_DIALECT: postgres
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - microservices-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  nginx:
+    build:
+      context: ./nginx
+      dockerfile: Dockerfile
+    container_name: nginx-load-balancer
+    ports:
+      - "80:80"
+    depends_on:
+      - users-service-1
+      - users-service-2
+      - payroll-service-1
+      - payroll-service-2
+      - incapacities-service-1
+      - incapacities-service-2
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+networks:
+  microservices-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+    driver: local
