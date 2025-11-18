@@ -28,7 +28,7 @@ services:
   # ========================================
   users-service-1:
     build:
-      context: ./inabilityUsersMicroservice
+      context: ./UsersService
       dockerfile: Dockerfile
     container_name: users-service-1
     environment:
@@ -55,7 +55,7 @@ services:
 
   users-service-2:
     build:
-      context: ./inabilityUsersMicroservice
+      context: ./UsersService
       dockerfile: Dockerfile
     container_name: users-service-2
     environment:
@@ -82,7 +82,7 @@ services:
 
   payroll-service-1:
     build:
-      context: ./Incapacities_project
+      context: ./PayrollService
       dockerfile: Dockerfile
     container_name: payroll-service-1
     environment:
@@ -109,7 +109,7 @@ services:
 
   payroll-service-2:
     build:
-      context: ./Incapacities_project
+      context: ./PayrollService
       dockerfile: Dockerfile
     container_name: payroll-service-2
     environment:
@@ -136,7 +136,7 @@ services:
 
   incapacities-service-1:
     build:
-      context: ./Microservicio-de-Incapacidades
+      context: ./IncapacitiesService
       dockerfile: Dockerfile
     container_name: incapacities-service-1
     environment:
@@ -162,7 +162,7 @@ services:
 
   incapacities-service-2:
     build:
-      context: ./Microservicio-de-Incapacidades
+      context: ./IncapacitiesService
       dockerfile: Dockerfile
     container_name: incapacities-service-2
     environment:
